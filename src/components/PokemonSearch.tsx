@@ -41,7 +41,7 @@ export default function PokemonSearch() {
       {error && <p className="text-red-400 text-center">No se encontró ese espécimen. Intenta de nuevo.</p>}
 
       {pokemon && (
-        <div className="bg-gradient-to-br from-gray-800 to-black p-6 rounded-2xl border border-blue-400/20 shadow-2xl animate-in fade-in zoom-in duration-300">
+        <div className="bg-linear-to-br from-gray-800 to-black p-6 rounded-2xl border border-blue-400/20 shadow-2xl animate-in fade-in zoom-in duration-300">
           <div className="flex flex-col md:flex-row items-center gap-6">
             <img 
               src={pokemon.sprites.other["official-artwork"].front_default} 

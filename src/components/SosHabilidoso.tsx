@@ -18,10 +18,10 @@ export default function SosHabilidoso() {
   return (
     <div 
       ref={cardRef}
-      className="max-w-4xl mx-auto my-12 p-1 bg-gradient-to-r from-yellow-400 via-green-500 to-blue-500 rounded-3xl shadow-[0_0_30px_rgba(34,197,94,0.4)]"
+      className="max-w-4xl mx-auto my-12 p-1 bg-linear-to-r from-yellow-400 via-green-500 to-blue-500 rounded-3xl shadow-[0_0_30px_rgba(34,197,94,0.4)]"
     >
       <div className="bg-black rounded-[calc(1.5rem-1px)] p-8 text-center">
-        <h2 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-green-400 mb-4 uppercase tracking-tighter">
+        <h2 className="text-4xl font-black text-transparent bg-clip-text bg-linear-to-r from-yellow-400 to-green-400 mb-4 uppercase tracking-tighter">
           ¡Apoya un sueño hoy!
         </h2>
         <p className="text-gray-300 text-lg mb-8 max-w-xl mx-auto">
