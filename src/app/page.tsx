@@ -4,6 +4,10 @@ import React, { useRef, useState, useEffect } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { registrarMiembro } from "./actions"
+import PokemonSearch from "../components/PokemonSearch";
+import Footer from "../components/Footer";
+import SosHabilidoso from '@/components/SosHabilidoso';
+import MusicSearch from '@/components/MusicSearch';
 
 export default function Home() {
   const container = useRef(null);
@@ -100,6 +104,9 @@ export default function Home() {
       Guardar en Base de Datos
     </button>
   </form>
+
+  <PokemonSearch />
+
 </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full max-w-6xl">
@@ -188,6 +195,8 @@ export default function Home() {
             Música motivacional para el entrenamiento diario.
           </p>
         </div>
+
+        <Footer />
 
       </div>
     </main>
