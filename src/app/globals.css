@@ -1,1 +1,40 @@
 @import "tailwindcss";
+
+@layer base {
+  body {
+    @apply bg-linear-to-b from-[#030712] via-[#0a0f1a] to-[#030712] text-white min-h-screen;
+  }
+}
+
+@layer utilities {
+  /* Solo animaciones personalizadas que no vienen en Tailwind */
+  @keyframes bounce-slow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  .animate-bounce-slow {
+    animation: bounce-slow 2s ease-in-out infinite;
+  }
+  
+  /* Scrollbar personalizado - Tailwind no tiene esto */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #1a1a1a;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border-radius: 4px;
+  }
+  
+  /* Efecto glass personalizado */
+  .glass-effect {
+    background: rgba(17, 25, 40, 0.75);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.125);
+  }
+}
