@@ -1,6 +1,7 @@
 // src/app/components/Menu.tsx
 'use client';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Menu as MenuIcon, X, Gamepad2, Music, Search, UserPlus, LogOut } from 'lucide-react';
 
 interface MenuProps {
@@ -46,8 +47,8 @@ export default function Menu({ user, onLogout }: MenuProps) {
 
   const menuItems = [
     { id: 'inicio', name: 'Inicio', icon: null },
-    { id: 'registro', name: 'Registro', icon: UserPlus },
-    { id: 'scouting', name: 'Scouting', icon: Search },
+    // { id: 'registro', name: 'Registro', icon: UserPlus },
+    // { id: 'scouting', name: 'Scouting', icon: Search },
     { id: 'juegos', name: 'Juegos', icon: Gamepad2 },
     { id: 'ritmo', name: 'Ritmo', icon: Music },
   ];
@@ -67,22 +68,16 @@ export default function Menu({ user, onLogout }: MenuProps) {
               onClick={() => scrollToSection('inicio')}
               className="flex items-center gap-2 sm:gap-3 cursor-pointer hover:scale-105 transition-transform"
             >
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-linear-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center shadow-lg shadow-green-500/30">
-                <span className="text-base sm:text-xl">⚽</span>
-              </div>
-              <div className="text-left">
-                <div>
-                  <span className="text-base sm:text-xl font-black tracking-tighter bg-linear-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
-                    HABILIDOSOS
-                  </span>
-                  <span className="hidden sm:inline text-xs bg-yellow-500/20 text-yellow-400 px-1.5 py-0.5 rounded ml-1">
-                    BETA
-                  </span>
+              <div className="relative anime-logo inline-block">
+                <Image 
+                  src="/images/logososbeta-v1.png"
+                  alt="HABILIDOSOS BETA"
+                  width={280}
+                  height={90}
+                  className="mx-auto drop-shadow-2xl relative z-10"
+                  priority
+                          />
                 </div>
-                <p className="hidden sm:block text-[8px] sm:text-[10px] text-gray-500 -mt-1">
-                  Tecnología deportiva
-                </p>
-              </div>
             </button>
 
             {/* Desktop Menu */}
@@ -110,9 +105,12 @@ export default function Menu({ user, onLogout }: MenuProps) {
               {/* BOTÓN DE SALIR */}
               {onLogout && (
                 <button
-                  onClick={onLogout}
+                  onClick={() => {
+                    console.log("Click en Salir desde Menu");
+                    onLogout();
+                  }}
                   className="ml-4 px-4 py-2 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-all text-sm font-medium flex items-center gap-2"
-                >
+                  >
                   <LogOut size={16} />
                   Salir
                 </button>
@@ -149,12 +147,15 @@ export default function Menu({ user, onLogout }: MenuProps) {
               </button>
             ))}
             
-            {/* Botón de Salir en móvil */}
+            {/* Botón de Salir */}
             {onLogout && (
               <button
-                onClick={onLogout}
+                onClick={() => {
+                  console.log("Click en Salir desde Menu");
+                  onLogout();
+                }}
                 className="w-full text-left px-6 py-3 transition-all duration-200 flex items-center gap-3 text-red-400 hover:bg-red-500/10"
-              >
+                  >
                 <LogOut size={18} />
                 <span className="font-medium">Cerrar Sesión</span>
               </button>

@@ -70,7 +70,7 @@ export default function Home() {
         <header id="inicio" className="text-center anime-item">
           <div className="relative anime-logo inline-block">
             <Image 
-              src="/images/logosbetsa v1.png"
+              src="/images/logo-habilidosos.png"
               alt="HABILIDOSOS BETA"
               width={280}
               height={90}
@@ -86,10 +86,10 @@ export default function Home() {
           <p className="text-gray-400 mt-4">Tecnología aplicada al deporte y la recreación</p>
         </header>
 
-        {/* REGISTRO DE MIEMBROS */}
+        {/* REGISTRO DE MIEMBROS*/}
         <section id="registro" className="anime-item">
-          <div className="bg-gray-900/30 rounded-3xl p-6 border border-green-500/20">
-            <h2 className="text-2xl font-bold text-green-400 mb-4 flex items-center gap-2">
+          {/*<div className="bg-gray-900/30 rounded-3xl p-6 border border-green-500/20">
+            {/*<h2 className="text-2xl font-bold text-green-400 mb-4 flex items-center gap-2">
               <span>📝</span> Registrar Nuevo Miembro
             </h2>
             <form className="space-y-4 max-w-md mx-auto">
@@ -107,19 +107,19 @@ export default function Home() {
                 💾 Guardar en Base de Datos
               </button>
             </form>
-          </div>
+          </div>*/}
         </section>
 
         {/* SCOUTING POKÉMON */}
         <section id="scouting" className="anime-item">
-          <div className="bg-gray-900/30 rounded-3xl p-6 border border-yellow-500/20">
+          {/*<div className="bg-gray-900/30 rounded-3xl p-6 border border-yellow-500/20">
             <h2 className="text-2xl font-bold text-yellow-400 mb-4 flex items-center gap-2">
               <span>⚡</span> Scouting Pokémon
             </h2>
             <p className="text-gray-400 text-center py-8">
               Próximamente: Estadísticas de Pokémon
             </p>
-          </div>
+          </div>*/}
         </section>
 
         {/* ZONA DE JUEGOS */}

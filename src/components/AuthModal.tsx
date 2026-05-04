@@ -1,6 +1,7 @@
 // src/app/components/AuthModal.tsx
 'use client';
 import { useState } from 'react';
+import Image from 'next/image';
 import { registrarUsuario, iniciarSesion } from '../app/actions';
 
 export default function AuthModal({ onLogin }: { onLogin: () => void }) {
@@ -27,9 +28,16 @@ export default function AuthModal({ onLogin }: { onLogin: () => void }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md">
       <div className="bg-linear-to-br from-gray-900 to-gray-800 rounded-3xl p-8 max-w-md w-full mx-4 border border-green-500/30 shadow-2xl">
         <div className="text-center mb-6">
-          <div className="w-20 h-20 bg-linear-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-4xl">⚽</span>
-          </div>
+          <div className="relative anime-logo inline-block">
+                          <Image 
+                            src="/images/habiupscalemediapreview.png"
+                            alt="HABILIDOSOS BETA"
+                            width={280}
+                            height={90}
+                            className="mx-auto drop-shadow-2xl relative z-10"
+                            priority
+                                    />
+                          </div>
           <h2 className="text-2xl font-bold text-green-400">
             {isLogin ? 'Bienvenido' : 'Únete a HABILIDOSOS BETA'}
           </h2>
