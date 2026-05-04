@@ -1,10 +1,14 @@
 // src/app/components/Menu.tsx
 'use client';
 import { useState, useEffect } from 'react';
-import { Menu as MenuIcon, X, Gamepad2, Music, Search, UserPlus } from 'lucide-react';
-import Logo from './Logo';  // ← Importamos el componente Logo
+import { Menu as MenuIcon, X, Gamepad2, Music, Search, UserPlus, LogOut } from 'lucide-react';
 
-export default function Menu() {
+interface MenuProps {
+  user?: any;
+  onLogout?: () => void;
+}
+
+export default function Menu({ user, onLogout }: MenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('');
@@ -58,13 +62,28 @@ export default function Menu() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 sm:h-20">
             
-            {/* LOGO - AHORA USAMOS EL COMPONENTE */}
-            <Logo 
-              variant="full"     // Ícono + texto
-              size="md"          // Tamaño mediano
-              onClick={() => scrollToSection('inicio')}  // Al hacer click va al inicio
-              showSubtitle={true}  // Muestra "Tecnología deportiva"
-            />
+            {/* LOGO */}
+            <button 
+              onClick={() => scrollToSection('inicio')}
+              className="flex items-center gap-2 sm:gap-3 cursor-pointer hover:scale-105 transition-transform"
+            >
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-linear-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center shadow-lg shadow-green-500/30">
+                <span className="text-base sm:text-xl">⚽</span>
+              </div>
+              <div className="text-left">
+                <div>
+                  <span className="text-base sm:text-xl font-black tracking-tighter bg-linear-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+                    HABILIDOSOS
+                  </span>
+                  <span className="hidden sm:inline text-xs bg-yellow-500/20 text-yellow-400 px-1.5 py-0.5 rounded ml-1">
+                    BETA
+                  </span>
+                </div>
+                <p className="hidden sm:block text-[8px] sm:text-[10px] text-gray-500 -mt-1">
+                  Tecnología deportiva
+                </p>
+              </div>
+            </button>
 
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center space-x-1 lg:space-x-2">
@@ -87,6 +106,17 @@ export default function Menu() {
                   )}
                 </button>
               ))}
+              
+              {/* BOTÓN DE SALIR */}
+              {onLogout && (
+                <button
+                  onClick={onLogout}
+                  className="ml-4 px-4 py-2 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-all text-sm font-medium flex items-center gap-2"
+                >
+                  <LogOut size={16} />
+                  Salir
+                </button>
+              )}
             </div>
 
             {/* Mobile Menu Button */}
@@ -118,11 +148,21 @@ export default function Menu() {
                 <span className="font-medium">{item.name}</span>
               </button>
             ))}
+            
+            {/* Botón de Salir en móvil */}
+            {onLogout && (
+              <button
+                onClick={onLogout}
+                className="w-full text-left px-6 py-3 transition-all duration-200 flex items-center gap-3 text-red-400 hover:bg-red-500/10"
+              >
+                <LogOut size={18} />
+                <span className="font-medium">Cerrar Sesión</span>
+              </button>
+            )}
           </div>
         </div>
       </nav>
 
-      {/* Espaciador para compensar el menú fijo */}
       <div className="h-16 sm:h-20"></div>
     </>
   );
