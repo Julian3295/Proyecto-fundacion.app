@@ -3,17 +3,19 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model Usuario {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
-  nombre       String
-  password     String
-  pokemonAvatar String? @default("pikachu")
-  rol          String   @default("Jugador")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id            Int      @id @default(autoincrement())
+  email         String   @unique
+  nombre        String
+  password      String
+  pokemonAvatar String?
+  rol           String   @default("user")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("Usuario") // <--- ESTA LÍNEA ES CLAVE
 }

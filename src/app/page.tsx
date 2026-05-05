@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { getUsuarioActual, cerrarSesion } from './actions';
+import { cerrarSesion } from './actions';
 import { useAnimeIntro } from './hooks/useAnime';
 import Menu from '../components/Menu';
 import Footer from '../components/Footer';
@@ -10,12 +10,13 @@ import SpotifySearch from '../components/SpotifySearch';
 import AuthModal from '../components/AuthModal';
 
 export default function Home() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // 1. Iniciamos en null para saber que estamos "cargando" la sesión
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [user, setUser] = useState<any>(null);
   const [games, setGames] = useState<any[]>([]);
   const containerRef = useAnimeIntro();
 
-  // Cargar juegos
+  // Cargar juegos (RAWG API)
   useEffect(() => {
     const fetchGames = async () => {
       const key = process.env.NEXT_PUBLIC_RAWG_API_KEY;
@@ -24,19 +25,22 @@ export default function Home() {
         const data = await response.json();
         setGames(data.results || []);
       } catch (error) {
-        console.error(error);
+        console.error("Error cargando juegos:", error);
       }
     };
     fetchGames();
   }, []);
 
-  // Verificar autenticación
+  // 2. Verificar autenticación al montar el componente
   useEffect(() => {
-    const checkAuth = async () => {
-      const usuario = await getUsuarioActual();
-      if (usuario) {
-        setUser(usuario);
+    const checkAuth = () => {
+      // Buscamos la cookie directamente en el navegador
+      const match = document.cookie.match(new RegExp('(^| )userId=([^;]+)'));
+      if (match) {
         setIsAuthenticated(true);
+        // Opcional: podrías recuperar el nombre de la cookie 'userNombre' aquí
+      } else {
+        setIsAuthenticated(false);
       }
     };
     checkAuth();
@@ -44,7 +48,7 @@ export default function Home() {
 
   const handleLogin = () => {
     setIsAuthenticated(true);
-    window.location.reload();
+    window.location.reload(); // Recargamos para limpiar estados y asegurar cookies
   };
 
   const handleLogout = async () => {
@@ -53,7 +57,13 @@ export default function Home() {
     setUser(null);
   };
 
-  // Mostrar modal de login si no está autenticado
+  // 3. Mientras verificamos la sesión (milisegundos), no mostramos nada o un spinner
+  // Esto evita que el Modal aparezca y desaparezca de golpe
+  if (isAuthenticated === null) {
+    return <div className="min-h-screen bg-[#030712]" />; 
+  }
+
+  // Si definitivamente no está autenticado, mostramos el modal
   if (!isAuthenticated) {
     return <AuthModal onLogin={handleLogin} />;
   }
@@ -61,17 +71,16 @@ export default function Home() {
   return (
     <main ref={containerRef} className="min-h-screen bg-linear-to-b from-[#030712] to-[#0a0f1a] text-white">
       
-      {/* Menú con botón de salir */}
       <Menu user={user} onLogout={handleLogout} />
       
       <div className="max-w-7xl mx-auto px-4 py-20 space-y-16">
         
-        {/* HEADER CON LOGO BETA */}
+        {/* HEADER */}
         <header id="inicio" className="text-center anime-item">
           <div className="relative anime-logo inline-block">
             <Image 
               src="/images/logo-habilidosos.png"
-              alt="HABILIDOSOS BETA"
+              alt="HABILIDOSOS"
               width={280}
               height={90}
               className="mx-auto drop-shadow-2xl relative z-10"
@@ -86,42 +95,6 @@ export default function Home() {
           <p className="text-gray-400 mt-4">Tecnología aplicada al deporte y la recreación</p>
         </header>
 
-        {/* REGISTRO DE MIEMBROS*/}
-        <section id="registro" className="anime-item">
-          {/*<div className="bg-gray-900/30 rounded-3xl p-6 border border-green-500/20">
-            {/*<h2 className="text-2xl font-bold text-green-400 mb-4 flex items-center gap-2">
-              <span>📝</span> Registrar Nuevo Miembro
-            </h2>
-            <form className="space-y-4 max-w-md mx-auto">
-              <input 
-                type="text"
-                placeholder="Nombre completo del deportista"
-                className="w-full p-3 rounded-xl bg-black/50 border border-gray-600 text-white"
-              />
-              <select className="w-full p-3 rounded-xl bg-black/50 border border-gray-600 text-white">
-                <option>Jugador</option>
-                <option>Entrenador</option>
-                <option>Voluntario</option>
-              </select>
-              <button className="w-full p-3 bg-linear-to-r from-green-600 to-green-500 rounded-xl font-bold">
-                💾 Guardar en Base de Datos
-              </button>
-            </form>
-          </div>*/}
-        </section>
-
-        {/* SCOUTING POKÉMON */}
-        <section id="scouting" className="anime-item">
-          {/*<div className="bg-gray-900/30 rounded-3xl p-6 border border-yellow-500/20">
-            <h2 className="text-2xl font-bold text-yellow-400 mb-4 flex items-center gap-2">
-              <span>⚡</span> Scouting Pokémon
-            </h2>
-            <p className="text-gray-400 text-center py-8">
-              Próximamente: Estadísticas de Pokémon
-            </p>
-          </div>*/}
-        </section>
-
         {/* ZONA DE JUEGOS */}
         <section id="juegos" className="anime-item">
           <div className="bg-gray-900/30 rounded-3xl p-6 border border-purple-500/20">
@@ -131,7 +104,7 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {games.length === 0 ? (
                 <div className="col-span-3 text-center text-gray-500 py-8">
-                  Cargando juegos...
+                  Cargando juegos de RAWG...
                 </div>
               ) : (
                 games.map((game) => (
