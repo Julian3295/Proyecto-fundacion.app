@@ -2,6 +2,8 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { registrarUsuario, iniciarSesion } from '../app/actions';
+import PokemonSelector from './PokemonSelector'; // Asegúrate de que la ruta sea correcta
+import { actualizarAvatar } from '../app/actions'; // Crearemos esta acción ahora
 
 const PokemonesIniciales = [
   { nombre: 'Pikachu', stats: { velocidad: 90, ataque: 55 }, img: 'https://img.pokemondb.net/sprites/black-white/anim/normal/pikachu.gif' },
@@ -47,11 +49,24 @@ export default function AuthModal({ onLogin }: { onLogin: () => void }) {
   };
 
   const finalizarRegistro = async () => {
-    setLoading(true);
-    setTimeout(() => {
+  if (!seleccionado) return;
+  
+  setLoading(true);
+  try {
+    // Llamamos a una acción del servidor para guardar el nombre del Pokémon
+    const result = await actualizarAvatar(seleccionado.name || seleccionado.nombre);
+    
+    if (result.success) {
       onLogin();
-      window.location.reload(); // Recarga tras elegir Pokémon
-    }, 1000);
+      window.location.reload(); 
+    } else {
+      setMessage("No se pudo guardar el avatar");
+    }
+    } catch (err) {
+      setMessage("Error de conexión");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -130,49 +145,25 @@ export default function AuthModal({ onLogin }: { onLogin: () => void }) {
             </p>
           </>
         ) : (
-          /* PASO 2: SELECTOR POKÉMON */
-          <div className="animate-in fade-in zoom-in duration-300">
-            <h2 className="text-2xl font-bold text-white text-center mb-2">¡Casi listo!</h2>
-            <p className="text-gray-400 text-center text-sm mb-6">Selecciona tu avatar inicial</p>
-            
-            <div className="grid grid-cols-1 gap-4">
-              {PokemonesIniciales.map((poke) => (
-                <div 
-                  key={poke.nombre}
-                  onClick={() => setSeleccionado(poke)}
-                  className={`cursor-pointer p-4 rounded-2xl border-2 transition-all flex items-center gap-4 ${
-                    seleccionado?.nombre === poke.nombre 
-                    ? 'border-green-500 bg-green-500/10' 
-                    : 'border-gray-700 bg-gray-800/50 hover:border-gray-500'
-                  }`}
-                >
-                  <img src={poke.img} alt={poke.nombre} className="w-14 h-14 object-contain" />
-                  <div className="flex-1">
-                    <p className="text-white font-bold">{poke.nombre}</p>
-                    <div className="mt-1 space-y-1">
-                      {Object.entries(poke.stats).map(([stat, val]: [string, any]) => (
-                        <div key={stat} className="flex items-center gap-2">
-                          <span className="text-[10px] text-gray-400 uppercase w-12">{stat}</span>
-                          <div className="flex-1 h-1.5 bg-gray-700 rounded-full overflow-hidden">
-                            <div className="h-full bg-green-400" style={{ width: `${val}%` }}></div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+  /* PASO 2: AHORA CON 151 OPCIONES */
+  <div className="animate-in fade-in zoom-in duration-300">
+    <h2 className="text-2xl font-bold text-white text-center mb-2">¡Elige tu compañero!</h2>
+    
+    {/* Usamos el componente que ya tenías guardado */}
+    <PokemonSelector 
+      onSelect={(pokemonNombre) => setSeleccionado({ name: pokemonNombre })} 
+      selectedPokemon={seleccionado?.name}
+    />
 
-            <button 
-              onClick={finalizarRegistro}
-              disabled={!seleccionado || loading}
-              className="w-full mt-8 py-3 bg-white text-black rounded-xl font-bold hover:scale-[1.02] transition-all disabled:opacity-50"
-            >
-              Completar Perfil 🎮
-            </button>
-          </div>
-        )}
+    <button 
+      onClick={finalizarRegistro}
+      disabled={!seleccionado || loading}
+      className="w-full mt-8 py-3 bg-green-500 text-white rounded-xl font-bold hover:scale-[1.02] transition-all disabled:opacity-50 shadow-lg shadow-green-900/40"
+    >
+      {loading ? 'Guardando...' : 'Completar Perfil 🎮'}
+    </button>
+  </div>
+)}
       </div>
     </div>
   );

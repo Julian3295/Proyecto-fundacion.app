@@ -8,20 +8,39 @@ import Menu from '../components/Menu';
 import Footer from '../components/Footer';
 import SpotifySearch from '../components/SpotifySearch';
 import AuthModal from '../components/AuthModal';
+import AvatarAnimado from '@/components/AvatarAnimado';
+import anime from 'animejs';
 
 export default function Home() {
-  // 1. Iniciamos en null para saber que estamos "cargando" la sesión
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [user, setUser] = useState<any>(null);
   const [games, setGames] = useState<any[]>([]);
   const containerRef = useAnimeIntro();
 
-  // Cargar juegos (RAWG API)
+  // EFECTO PARA ANIMAR LAS TARJETAS CUANDO APARECEN
+  useEffect(() => {
+    if (games.length > 0) {
+      anime({
+        targets: '.card-animada',
+        translateY: [20, 0],
+        opacity: [0, 1],
+        delay: anime.stagger(150), // Efecto cascada de tu amigo
+        easing: 'easeOutQuad',
+        duration: 800
+      });
+    }
+  }, [games]); // Se activa cuando los juegos terminan de cargar
+
+  // 1. Cargar juegos (RAWG API)
   useEffect(() => {
     const fetchGames = async () => {
       const key = process.env.NEXT_PUBLIC_RAWG_API_KEY;
+      if (!key) return;
+
       try {
-        const response = await fetch(`https://api.rawg.io/api/games?key=${key}&genres=sports&page_size=3`);
+        const response = await fetch(
+          `https://api.rawg.io/api/games?key=${key}&genres=sports&page_size=3`
+        );
         const data = await response.json();
         setGames(data.results || []);
       } catch (error) {
@@ -31,24 +50,35 @@ export default function Home() {
     fetchGames();
   }, []);
 
-  // 2. Verificar autenticación al montar el componente
+  // 2. Verificar autenticación
   useEffect(() => {
     const checkAuth = () => {
-      // Buscamos la cookie directamente en el navegador
       const match = document.cookie.match(new RegExp('(^| )userId=([^;]+)'));
-      if (match) {
-        setIsAuthenticated(true);
-        // Opcional: podrías recuperar el nombre de la cookie 'userNombre' aquí
-      } else {
-        setIsAuthenticated(false);
-      }
+      setIsAuthenticated(!!match);
     };
     checkAuth();
   }, []);
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (isAuthenticated) {
+        try {
+          const response = await fetch('/api/user');
+          if (response.ok) {
+            const data = await response.json();
+            setUser(data);
+          }
+        } catch (error) {
+          console.error("Error cargando datos:", error);
+        }
+      }
+    };
+    fetchUserData();
+  }, [isAuthenticated]);
+
   const handleLogin = () => {
     setIsAuthenticated(true);
-    window.location.reload(); // Recargamos para limpiar estados y asegurar cookies
+    window.location.reload();
   };
 
   const handleLogout = async () => {
@@ -57,20 +87,11 @@ export default function Home() {
     setUser(null);
   };
 
-  // 3. Mientras verificamos la sesión (milisegundos), no mostramos nada o un spinner
-  // Esto evita que el Modal aparezca y desaparezca de golpe
-  if (isAuthenticated === null) {
-    return <div className="min-h-screen bg-[#030712]" />; 
-  }
-
-  // Si definitivamente no está autenticado, mostramos el modal
-  if (!isAuthenticated) {
-    return <AuthModal onLogin={handleLogin} />;
-  }
+  if (isAuthenticated === null) return <div className="min-h-screen bg-[#030712]" />; 
+  if (!isAuthenticated) return <AuthModal onLogin={handleLogin} />;
 
   return (
     <main ref={containerRef} className="min-h-screen bg-linear-to-b from-[#030712] to-[#0a0f1a] text-white">
-      
       <Menu user={user} onLogout={handleLogout} />
       
       <div className="max-w-7xl mx-auto px-4 py-20 space-y-16">
@@ -87,6 +108,9 @@ export default function Home() {
               priority
             />
           </div>
+          <div className="mt-6 mb-4">
+            <AvatarAnimado pokemonNombre={user?.pokemonAvatar || 'pendiente'} />
+          </div>
           <div className="mt-2">
             <span className="inline-block bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full text-sm font-semibold animate-pulse">
               BETA
@@ -95,7 +119,7 @@ export default function Home() {
           <p className="text-gray-400 mt-4">Tecnología aplicada al deporte y la recreación</p>
         </header>
 
-        {/* ZONA DE JUEGOS */}
+        {/* ZONA DE JUEGOS CON CLASE ANIMADA */}
         <section id="juegos" className="anime-item">
           <div className="bg-gray-900/30 rounded-3xl p-6 border border-purple-500/20">
             <h2 className="text-2xl font-bold text-purple-400 mb-4 flex items-center gap-2">
@@ -108,7 +132,8 @@ export default function Home() {
                 </div>
               ) : (
                 games.map((game) => (
-                  <div key={game.id} className="group relative overflow-hidden rounded-2xl h-40 border border-gray-800 hover:border-purple-500/50 transition-all cursor-pointer">
+                  /* AGREGAMOS LA CLASE card-animada AQUÍ */
+                  <div key={game.id} className="card-animada group relative overflow-hidden rounded-2xl h-40 border border-gray-800 hover:border-purple-500/50 transition-all cursor-pointer opacity-0">
                     <img 
                       src={game.background_image} 
                       className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-all duration-500 group-hover:scale-110" 
@@ -130,7 +155,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* RITMO HABILIDOSOS */}
         <section id="ritmo" className="anime-item">
           <div className="bg-gray-900/30 rounded-3xl p-6 border border-blue-500/20">
             <h2 className="text-2xl font-bold text-blue-400 mb-4 flex items-center gap-2">

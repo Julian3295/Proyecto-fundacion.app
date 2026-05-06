@@ -15,6 +15,7 @@
     "autoprefixer": "^10.5.0",
     "dotenv": "^17.4.2",
     "gsap": "^3.15.0",
+    "jsonwebtoken": "^9.0.3",
     "lucide-react": "^1.14.0",
     "next": "16.2.4",
     "pg": "^8.20.0",
@@ -27,6 +28,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.4",
     "@types/animejs": "^3.1.13",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
