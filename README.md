@@ -1,20 +1,112 @@
-```markdown
-# Habilidosos F.C. - Un golazo a tus sueños ⚽
+⚽ SOS Habilidosos - Plataforma de Entretenimiento & Comunidad
+Sistema integral de entretenimiento desarrollado con Next.js 14, diseñado para ofrecer una experiencia interactiva que combina videojuegos, música y personalización de perfiles mediante avatares Pokémon.
 
-Este es el sistema de gestión para la **Fundación Habilidosos**, diseñado para administrar el registro de miembros, seguimiento de progresos deportivos y coordinación del equipo.
+📋 Descripción
+SOS Habilidosos es una aplicación web moderna y responsive que centraliza el acceso a una zona de juegos seleccionada, integración con Spotify para búsqueda de música y un sistema de identidad único basado en avatares dinámicos. El proyecto destaca por su interfaz oscura con efectos de cristal (glassmorphism) y animaciones fluidas.
 
-## 🚀 Tecnologías utilizadas
+🚀 Instalación y Ejecución:
+# Instalar dependencias
+npm install
 
-* **Framework:** Next.js 15 (App Router)
-* **Base de Datos:** PostgreSQL 18
-* **ORM:** Prisma
-* **Estilos:** Tailwind CSS
+# Ejecutar en modo desarrollo
+npm run dev
 
-## 🛠️ Configuración del proyecto
+# Construir para producción 
+npm run build
 
-Para correr este proyecto localmente, sigue estos pasos:
+# Ejecutar en producción
+npm start
 
-### 1. Clonar el repositorio
-```bash
-git clone https://github.com/Julian3295/proyecto-fundacion-app.git
-cd proyecto-fundacion-app
+La aplicación estará disponible en http://localhost:3000
+
+🛠️ Stack Tecnológico
+Framework: Next.js 14 (App Router)
+
+Lenguaje: TypeScript
+
+Estilos: Tailwind CSS (Clases canónicas y personalizadas)
+
+Animaciones: Framer Motion / Anime.js (usado en el hook useAnimeIntro)
+
+Iconos: Lucide React
+
+Fuentes: Tipografías modernas optimizadas para gaming.
+
+Autenticación: Sistema basado en Cookies/Middleware para protección de rutas.
+
+📁 Estructura del Proyecto
+
+src/
+├── app/
+│   ├── api/                  # Endpoints para usuarios y juegos
+│   ├── actions.ts            # Lógica de cierre de sesión y servidor
+│   ├── layout.tsx            # Estructura principal y fuentes
+│   └── page.tsx              # Dashboard principal (Dashboard de usuario)
+├── components/
+│   ├── Menu.tsx              # Sistema de navegación inteligente
+│   ├── Footer.tsx            # Pie de página corporativo
+│   ├── SpotifySearch.tsx     # Buscador de música integrado
+│   ├── AuthModal.tsx         # Sistema de acceso y registro
+│   └── ...                   # Componentes UI reutilizables
+├── hooks/
+│   └── useAnime.ts           # Hook personalizado para intros animadas
+├── public/
+│   └── images/               # Assets, logos (v1 beta) y multimedia
+└── types/                    # Definiciones de interfaces TypeScript
+
+    ✅ Funcionalidades Implementadas
+
+1. Sistema de Autenticación & Acceso:
+
+    ✅ Protección de Rutas: Middleware que valida la sesión del usuario.
+
+    ✅ AuthModal: Interfaz elegante para ingreso sin recargas de página.
+
+    ✅ Gestión de Sesión: Persistencia mediante cookies y cierre de sesión seguro.
+
+2. Personalización (Sistema Pokémon):
+
+    ✅ Avatar Dinámico: Los usuarios cuentan con un avatar animado (Charmander, Bulbasaur, etc.) extraído de APIs de sprites clásicos.
+
+    ✅ Modal de Estadísticas: Al interactuar con el avatar, se despliega un modal con el "Poder", "Tipo" y "Nivel" del usuario.
+
+    ✅ Estado Online: Indicador visual de conexión activa.
+
+3. Zona de Juegos (Gaming Center):
+
+    ✅ Catálogo Dinámico: Listado de juegos con miniaturas optimizadas.
+
+    ✅ Efecto Hover 3D: Animaciones de zoom y brillo al pasar el cursor sobre las tarjetas de juego.
+
+    ✅ Acceso Directo: Enlaces externos a plataformas de juegos integradas.
+
+4. Ritmo Habilidosos (Spotify):
+
+    ✅ Buscador de Tracks: Integración para buscar canciones y artistas.
+
+    ✅ Interfaz Multimedia: Diseño adaptado para la gestión de contenido musical dentro de la plataforma.
+
+🎨 Diseño y UX:
+
+    -Tema Dark Premium: Paleta de colores basada en #030712 con acentos en verde esmeralda (emerald-500).
+
+    -Glassmorphism: Barras de navegación y modales con desenfoque de fondo (backdrop-blur).
+
+    -Navegación Inteligente: Menú adaptativo que se transforma de botones horizontales a menú hamburguesa en dispositivos móviles.
+
+    -Identidad Visual: Uso del logo oficial "SOS Habilidosos" y versiones especiales para la fase Beta.
+
+🔮 Mejoras Futuras:
+
+    [ ] Integración real con la API de Spotify para reproducción directa.
+
+    [ ] Sistema de niveles y experiencia (XP) real basado en tiempo de juego.
+
+    [ ] Chat global para la comunidad de Habilidosos.
+
+    [ ] Tabla de clasificación (Leaderboard) de juegos.
+
+    [ ] Soporte para múltiples idiomas (i18n).
+
+Desarrollado con ❤️ por el equipo de SOS Habilidosos.
+Versión Beta 2.0 — 2026
