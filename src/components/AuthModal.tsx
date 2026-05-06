@@ -1,15 +1,9 @@
-'use client';
+"use client";
+
 import { useState } from 'react';
 import Image from 'next/image';
-import { registrarUsuario, iniciarSesion } from '../app/actions';
-import PokemonSelector from './PokemonSelector'; // Asegúrate de que la ruta sea correcta
-import { actualizarAvatar } from '../app/actions'; // Crearemos esta acción ahora
-
-const PokemonesIniciales = [
-  { nombre: 'Pikachu', stats: { velocidad: 90, ataque: 55 }, img: 'https://img.pokemondb.net/sprites/black-white/anim/normal/pikachu.gif' },
-  { nombre: 'Bulbasaur', stats: { defensa: 49, salud: 45 }, img: 'https://img.pokemondb.net/sprites/black-white/anim/normal/bulbasaur.gif' },
-  { nombre: 'Charmander', stats: { ataque: 52, velocidad: 65 }, img: 'https://img.pokemondb.net/sprites/black-white/anim/normal/charmander.gif' }
-];
+import { registrarUsuario, iniciarSesion, actualizarAvatar } from '../app/actions';
+import PokemonSelector from './PokemonSelector';
 
 export default function AuthModal({ onLogin }: { onLogin: () => void }) {
   const [isLogin, setIsLogin] = useState(true);
@@ -28,14 +22,9 @@ export default function AuthModal({ onLogin }: { onLogin: () => void }) {
       
       if (result && result.success) {
         if (!isLogin && paso === 1) {
-          // Si es registro exitoso, vamos al paso 2
           setPaso(2);
         } else {
-          // SI ES LOGIN EXITOSO:
-          // 1. Ejecutamos onLogin() para actualizar el estado local
           onLogin();
-          // 2. IMPORTANTE: Recargamos la ventana para que el middleware/page.tsx 
-          // lea las cookies recién creadas y no te rebote.
           window.location.reload();
         }
       } else {
@@ -49,19 +38,16 @@ export default function AuthModal({ onLogin }: { onLogin: () => void }) {
   };
 
   const finalizarRegistro = async () => {
-  if (!seleccionado) return;
-  
-  setLoading(true);
-  try {
-    // Llamamos a una acción del servidor para guardar el nombre del Pokémon
-    const result = await actualizarAvatar(seleccionado.name || seleccionado.nombre);
-    
-    if (result.success) {
-      onLogin();
-      window.location.reload(); 
-    } else {
-      setMessage("No se pudo guardar el avatar");
-    }
+    if (!seleccionado) return;
+    setLoading(true);
+    try {
+      const result = await actualizarAvatar(seleccionado.name || seleccionado.nombre);
+      if (result.success) {
+        onLogin();
+        window.location.reload(); 
+      } else {
+        setMessage("No se pudo guardar el avatar");
+      }
     } catch (err) {
       setMessage("Error de conexión");
     } finally {
@@ -70,37 +56,41 @@ export default function AuthModal({ onLogin }: { onLogin: () => void }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md">
-      <div className="bg-linear-to-br from-gray-900 to-gray-800 rounded-3xl p-8 max-w-md w-full mx-4 border border-green-500/30 shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
+      {/* CONTENEDOR PRINCIPAL - Estilo moderno redondeado */}
+      <div className="w-full max-w-md bg-[#111827] border border-gray-700/50 rounded-4xl p-8 shadow-2xl text-center">
         
         {paso === 1 ? (
           <>
-            <div className="text-center mb-6">
-              <div className="relative anime-logo inline-block">
+            {/* LOGO PERSONAJE / ARDILLA */}
+            <div className="mb-6 flex justify-center">
+              <div className="relative w-52 h-52 transition-transform duration-300 ease-out hover:scale-110 cursor-pointer">
                 <Image 
                   src="/images/habiupscalemediapreview.png" 
-                  alt="HABILIDOSOS BETA"
-                  width={280}
-                  height={90}
-                  className="mx-auto drop-shadow-2xl relative z-10"
+                  alt="Habi Logo"
+                  fill
+                  className="object-contain drop-shadow-[0_0_15px_rgba(16,185,129,0.3)]"
                   priority
                 />
               </div>
-              <h2 className="text-2xl font-bold text-green-400">
-                {isLogin ? 'Bienvenido' : 'Únete a HABILIDOSOS BETA'}
-              </h2>
-              <p className="text-gray-400 text-sm mt-2">
-                {isLogin ? 'Inicia sesión en tu cuenta' : 'Crea tu cuenta gratis'}
-              </p>
             </div>
 
+            {/* TEXTOS */}
+            <h2 className="text-3xl font-bold text-[#10b981] mb-1">
+              {isLogin ? 'Bienvenido' : 'Únete ahora'}
+            </h2>
+            <p className="text-gray-400 text-sm mb-8">
+              {isLogin ? 'Inicia sesión en tu cuenta' : 'Crea tu cuenta de Habilidosos'}
+            </p>
+
+            {/* FORMULARIO */}
             <form action={handleSubmit} className="space-y-4">
               {!isLogin && (
                 <input
                   name="nombre"
                   type="text"
-                  placeholder="Nombre completo"
-                  className="w-full p-3 rounded-xl bg-black/50 border border-gray-600 text-white focus:border-green-500 outline-none"
+                  placeholder="Tu nombre de Habilidoso"
+                  className="w-full px-6 py-4 rounded-xl bg-[#e5edff] text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-medium placeholder:text-gray-500"
                   required
                 />
               )}
@@ -108,62 +98,68 @@ export default function AuthModal({ onLogin }: { onLogin: () => void }) {
               <input
                 name="email"
                 type="email"
-                placeholder="Correo electrónico"
-                className="w-full p-3 rounded-xl bg-black/50 border border-gray-600 text-white focus:border-green-500 outline-none"
+                placeholder="correo@ejemplo.com"
+                className="w-full px-6 py-4 rounded-xl bg-[#e5edff] text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-medium placeholder:text-gray-500"
                 required
               />
               
               <input
                 name="password"
                 type="password"
-                placeholder="Contraseña"
-                className="w-full p-3 rounded-xl bg-black/50 border border-gray-600 text-white focus:border-green-500 outline-none"
+                placeholder="••••••••••"
+                className="w-full px-6 py-4 rounded-xl bg-[#e5edff] text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-medium placeholder:text-gray-500"
                 required
               />
 
               {message && (
-                <p className="text-red-400 text-sm text-center">{message}</p>
+                <p className="text-red-400 text-sm font-semibold">{message}</p>
               )}
 
+              {/* BOTÓN CON GRADIENTE VERDE */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-linear-to-r from-green-600 to-green-500 rounded-xl font-bold hover:scale-[1.02] transition-all disabled:opacity-50 text-white shadow-lg shadow-green-900/20"
+                className="w-full py-4 rounded-2xl bg-linear-to-r from-[#10b981] to-[#059669] text-white font-bold text-lg hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-emerald-900/20 flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {loading ? 'Cargando...' : (isLogin ? '🚀 Iniciar Sesión' : '✨ Registrarse')}
               </button>
             </form>
 
-            <p className="text-center text-gray-400 text-sm mt-4">
-              {isLogin ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?'}
+            {/* SWITCHER */}
+            <div className="mt-8 text-sm">
+              <span className="text-gray-400">
+                {isLogin ? '¿No tienes cuenta?' : '¿Ya eres parte?'}
+              </span>{' '}
               <button
-                onClick={() => setIsLogin(!isLogin)}
-                className="ml-2 text-green-400 hover:underline"
+                onClick={() => { setIsLogin(!isLogin); setMessage(''); }}
+                className="text-[#10b981] font-bold hover:underline ml-1"
               >
-                {isLogin ? 'Regístrate' : 'Inicia sesión'}
+                {isLogin ? 'Regístrate' : 'Inicia Sesión'}
               </button>
-            </p>
+            </div>
           </>
         ) : (
-  /* PASO 2: AHORA CON 151 OPCIONES */
-  <div className="animate-in fade-in zoom-in duration-300">
-    <h2 className="text-2xl font-bold text-white text-center mb-2">¡Elige tu compañero!</h2>
-    
-    {/* Usamos el componente que ya tenías guardado */}
-    <PokemonSelector 
-      onSelect={(pokemonNombre) => setSeleccionado({ name: pokemonNombre })} 
-      selectedPokemon={seleccionado?.name}
-    />
+          /* PASO 2: SELECCIÓN DE POKÉMON CON EL MISMO ESTILO */
+          <div className="animate-in fade-in zoom-in duration-300">
+            <h2 className="text-2xl font-bold text-[#10b981] mb-2">¡Casi listo!</h2>
+            <p className="text-gray-400 text-sm mb-6">Elige a tu compañero de aventura</p>
+            
+            <div className="bg-gray-800/50 rounded-2xl p-4 border border-gray-700">
+              <PokemonSelector 
+                onSelect={(pokemonNombre) => setSeleccionado({ name: pokemonNombre })} 
+                selectedPokemon={seleccionado?.name}
+              />
+            </div>
 
-    <button 
-      onClick={finalizarRegistro}
-      disabled={!seleccionado || loading}
-      className="w-full mt-8 py-3 bg-green-500 text-white rounded-xl font-bold hover:scale-[1.02] transition-all disabled:opacity-50 shadow-lg shadow-green-900/40"
-    >
-      {loading ? 'Guardando...' : 'Completar Perfil 🎮'}
-    </button>
-  </div>
-)}
+            <button 
+              onClick={finalizarRegistro}
+              disabled={!seleccionado || loading}
+              className="w-full mt-8 py-4 bg-linear-to-r from-[#10b981] to-[#059669] text-white rounded-2xl font-bold text-lg hover:brightness-110 transition-all disabled:opacity-50 shadow-lg"
+            >
+              {loading ? 'Guardando...' : 'Completar Perfil 🎮'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
