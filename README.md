@@ -34,26 +34,6 @@ Fuentes: Tipografías modernas optimizadas para gaming.
 
 Autenticación: Sistema basado en Cookies/Middleware para protección de rutas.
 
-📁 Estructura del Proyecto
-
-src/
-├── app/
-│   ├── api/                  # Endpoints para usuarios y juegos
-│   ├── actions.ts            # Lógica de cierre de sesión y servidor
-│   ├── layout.tsx            # Estructura principal y fuentes
-│   └── page.tsx              # Dashboard principal (Dashboard de usuario)
-├── components/
-│   ├── Menu.tsx              # Sistema de navegación inteligente
-│   ├── Footer.tsx            # Pie de página corporativo
-│   ├── SpotifySearch.tsx     # Buscador de música integrado
-│   ├── AuthModal.tsx         # Sistema de acceso y registro
-│   └── ...                   # Componentes UI reutilizables
-├── hooks/
-│   └── useAnime.ts           # Hook personalizado para intros animadas
-├── public/
-│   └── images/               # Assets, logos (v1 beta) y multimedia
-└── types/                    # Definiciones de interfaces TypeScript
-
     ✅ Funcionalidades Implementadas
 
 1. Sistema de Autenticación & Acceso:
