@@ -12,7 +12,7 @@ export default function SpotifySearch() {
     // Simulamos búsqueda
     setTimeout(() => {
       setLoading(false);
-      alert(`Buscando: ${search} - Próximamente conectaremos con Spotify API`);
+      //alert(`Buscando: ${search} - Próximamente conectaremos con Spotify API`);//
     }, 1000);
   };
 

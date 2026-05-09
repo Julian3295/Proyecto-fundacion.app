@@ -121,7 +121,7 @@ export default function AuthModal({ onLogin }: { onLogin: () => void }) {
                 disabled={loading}
                 className="w-full py-4 rounded-2xl bg-linear-to-r from-[#10b981] to-[#059669] text-white font-bold text-lg hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-emerald-900/20 flex items-center justify-center gap-2 disabled:opacity-50"
               >
-                {loading ? 'Cargando...' : (isLogin ? '🚀 Iniciar Sesión' : '✨ Registrarse')}
+                {loading ? 'Cargando...' : (isLogin ? 'Iniciar Sesión' : 'Registrarse')}
               </button>
             </form>
 
