@@ -4,8 +4,9 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { registrarUsuario, iniciarSesion, actualizarAvatar } from '../app/actions';
 import PokemonSelector from './PokemonSelector';
+import { Gamepad2, X } from 'lucide-react';
 
-export default function AuthModal({ onLogin }: { onLogin: () => void }) {
+export default function AuthModal({ onLogin, onClose }: { onLogin: () => void; onClose?: () => void }) {
   const [isLogin, setIsLogin] = useState(true);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -57,8 +58,18 @@ export default function AuthModal({ onLogin }: { onLogin: () => void }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
+      {/* Botón cerrar */}
+      {onClose && (
+        <button
+          onClick={onClose}
+          className="absolute top-6 right-6 z-50 w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-all"
+        >
+          <X className="w-5 h-5" />
+        </button>
+      )}
+
       {/* CONTENEDOR PRINCIPAL - Estilo moderno redondeado */}
-      <div className="w-full max-w-md bg-[#111827] border border-gray-700/50 rounded-4xl p-8 shadow-2xl text-center">
+      <div className="w-full max-w-md bg-[#111827] border border-gray-700/50 rounded-4xl p-8 shadow-2xl text-center relative">
         
         {paso === 1 ? (
           <>
@@ -69,8 +80,10 @@ export default function AuthModal({ onLogin }: { onLogin: () => void }) {
                   src="/images/habiupscalemediapreview.png" 
                   alt="Habi Logo"
                   fill
+                  sizes="208px"
                   className="object-contain drop-shadow-[0_0_15px_rgba(16,185,129,0.3)]"
-                  priority
+                  preload
+                  unoptimized
                 />
               </div>
             </div>
@@ -84,15 +97,39 @@ export default function AuthModal({ onLogin }: { onLogin: () => void }) {
             </p>
 
             {/* FORMULARIO */}
-            <form action={handleSubmit} className="space-y-4">
+            <form action={handleSubmit} className="space-y-3">
               {!isLogin && (
-                <input
-                  name="nombre"
-                  type="text"
-                  placeholder="Tu nombre de Habilidoso"
-                  className="w-full px-6 py-4 rounded-xl bg-[#e5edff] text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-medium placeholder:text-gray-500"
-                  required
-                />
+                <>
+                  <input
+                    name="nombre"
+                    type="text"
+                    placeholder="Tu nombre de Habilidoso"
+                    className="w-full px-6 py-4 rounded-xl bg-[#e5edff] text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-medium placeholder:text-gray-500"
+                    required
+                  />
+                  <div className="grid grid-cols-2 gap-3">
+                    <input
+                      name="edad"
+                      type="number"
+                      placeholder="Edad"
+                      min="1"
+                      max="120"
+                      className="w-full px-4 py-4 rounded-xl bg-[#e5edff] text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-medium placeholder:text-gray-500"
+                    />
+                    <input
+                      name="telefono"
+                      type="tel"
+                      placeholder="Teléfono"
+                      className="w-full px-4 py-4 rounded-xl bg-[#e5edff] text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-medium placeholder:text-gray-500"
+                    />
+                  </div>
+                  <input
+                    name="ciudad"
+                    type="text"
+                    placeholder="Tu ciudad"
+                    className="w-full px-6 py-4 rounded-xl bg-[#e5edff] text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-medium placeholder:text-gray-500"
+                  />
+                </>
               )}
               
               <input
@@ -156,7 +193,7 @@ export default function AuthModal({ onLogin }: { onLogin: () => void }) {
               disabled={!seleccionado || loading}
               className="w-full mt-8 py-4 bg-linear-to-r from-[#10b981] to-[#059669] text-white rounded-2xl font-bold text-lg hover:brightness-110 transition-all disabled:opacity-50 shadow-lg"
             >
-              {loading ? 'Guardando...' : 'Completar Perfil 🎮'}
+              {loading ? 'Guardando...' : <>Completar Perfil <Gamepad2 className="w-5 h-5 inline-block" /></>}
             </button>
           </div>
         )}

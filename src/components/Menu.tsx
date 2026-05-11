@@ -1,15 +1,17 @@
-// src/app/components/Menu.tsx
+// src/components/Menu.tsx
 'use client';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Menu as MenuIcon, X, Gamepad2, Music, Search, UserPlus, LogOut } from 'lucide-react';
+import { Menu as MenuIcon, X, Gamepad2, Music, LogOut } from 'lucide-react';
 
 interface MenuProps {
   user?: any;
   onLogout?: () => void;
+  pokemonName?: string;
+  onShowStats?: () => void;
 }
 
-export default function Menu({ user, onLogout }: MenuProps) {
+export default function Menu({ user, onLogout, pokemonName, onShowStats }: MenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('');
@@ -17,10 +19,10 @@ export default function Menu({ user, onLogout }: MenuProps) {
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
-      
+
       const sections = ['inicio', 'registro', 'scouting', 'juegos', 'ritmo'];
       const scrollPos = window.scrollY + 100;
-      
+
       for (const section of sections) {
         const element = document.getElementById(section);
         if (element) {
@@ -32,7 +34,7 @@ export default function Menu({ user, onLogout }: MenuProps) {
         }
       }
     };
-    
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -47,37 +49,35 @@ export default function Menu({ user, onLogout }: MenuProps) {
 
   const menuItems = [
     { id: 'inicio', name: 'Inicio', icon: null },
-    // { id: 'registro', name: 'Registro', icon: UserPlus },
-    // { id: 'scouting', name: 'Scouting', icon: Search },
     { id: 'juegos', name: 'Juegos', icon: Gamepad2 },
     { id: 'ritmo', name: 'Ritmo', icon: Music },
   ];
 
   return (
     <>
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${
-        scrolled 
-          ? 'bg-black/90 backdrop-blur-xl border-b border-green-500/20 shadow-2xl' 
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        scrolled
+          ? 'bg-black/90 backdrop-blur-xl border-b border-green-500/20 shadow-2xl'
           : 'bg-linear-to-b from-black/80 to-transparent'
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 sm:h-20">
-            
+
             {/* LOGO */}
-            <button 
+            <button
               onClick={() => scrollToSection('inicio')}
               className="flex items-center gap-2 sm:gap-3 cursor-pointer hover:scale-105 transition-transform"
             >
               <div className="relative anime-logo inline-block">
-                <Image 
+                <Image
                   src="/images/logososbeta-v1.png"
                   alt="HABILIDOSOS BETA"
                   width={280}
                   height={90}
                   className="mx-auto drop-shadow-2xl relative z-10"
                   priority
-                          />
-                </div>
+                />
+              </div>
             </button>
 
             {/* Desktop Menu */}
@@ -101,29 +101,52 @@ export default function Menu({ user, onLogout }: MenuProps) {
                   )}
                 </button>
               ))}
-              
+
               {/* BOTÓN DE SALIR */}
               {onLogout && (
                 <button
-                  onClick={() => {
-                    console.log("Click en Salir desde Menu");
-                    onLogout();
-                  }}
+                  onClick={onLogout}
                   className="ml-4 px-4 py-2 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-all text-sm font-medium flex items-center gap-2"
-                  >
+                >
                   <LogOut size={16} />
                   Salir
                 </button>
               )}
             </div>
 
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden relative w-10 h-10 flex items-center justify-center rounded-xl bg-green-500/10 hover:bg-green-500/20 transition-all"
-            >
-              {isOpen ? <X size={22} className="text-green-400" /> : <MenuIcon size={22} className="text-green-400" />}
-            </button>
+            {/* Right side: Pokemon user button + hamburger */}
+            <div className="flex items-center gap-2">
+              {onShowStats && pokemonName && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onShowStats();
+                  }}
+                  className="group flex items-center gap-2 bg-white/5 hover:bg-white/10 p-1 pr-3 rounded-full border border-emerald-500/30 transition-all cursor-pointer"
+                >
+                  <div className="w-8 h-8 md:w-9 md:h-9 rounded-full border-2 border-emerald-500 overflow-hidden bg-black">
+                    <img
+                      src={`https://img.pokemondb.net/sprites/black-white/anim/normal/${pokemonName}.gif`}
+                      alt="Pokemon Avatar"
+                      className="w-full h-full object-contain p-1"
+                    />
+                  </div>
+                  <div className="text-left leading-tight">
+                    <p className="text-[10px] font-black uppercase tracking-tighter">{user?.nombre?.split(' ')[0] || 'USUARIO'}</p>
+                    <p className="text-[8px] text-emerald-400 font-bold">● ONLINE</p>
+                  </div>
+                </button>
+              )}
+
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="md:hidden relative w-10 h-10 flex items-center justify-center rounded-xl bg-green-500/10 hover:bg-green-500/20 transition-all"
+              >
+                {isOpen ? <X size={22} className="text-green-400" /> : <MenuIcon size={22} className="text-green-400" />}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -146,16 +169,13 @@ export default function Menu({ user, onLogout }: MenuProps) {
                 <span className="font-medium">{item.name}</span>
               </button>
             ))}
-            
+
             {/* Botón de Salir */}
             {onLogout && (
               <button
-                onClick={() => {
-                  console.log("Click en Salir desde Menu");
-                  onLogout();
-                }}
+                onClick={onLogout}
                 className="w-full text-left px-6 py-3 transition-all duration-200 flex items-center gap-3 text-red-400 hover:bg-red-500/10"
-                  >
+              >
                 <LogOut size={18} />
                 <span className="font-medium">Cerrar Sesión</span>
               </button>

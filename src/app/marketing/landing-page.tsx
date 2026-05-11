@@ -5,6 +5,7 @@ import Image from 'next/image';
 import AuthModal from '@/components/AuthModal';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
+import { Gamepad2, Music, Trophy } from 'lucide-react';
 
 export default function LandingPage() {
   const [showAuth, setShowAuth] = useState(false);
@@ -30,8 +31,10 @@ export default function LandingPage() {
               src="/images/habiupscalemediapreview.png"
               alt="Habi Logo"
               fill
+              sizes="208px"
               className="object-contain drop-shadow-[0_0_30px_rgba(16,185,129,0.3)]"
-              priority
+              preload
+              unoptimized
             />
           </div>
 
@@ -47,17 +50,17 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
             <div className="bg-white/5 rounded-2xl p-6 border border-white/10 hover:border-emerald-500/30 transition-all">
-              <span className="text-3xl">🎮</span>
+              <Gamepad2 className="w-8 h-8 text-emerald-400" />
               <h3 className="text-lg font-bold mt-2">Zona de Juegos</h3>
               <p className="text-gray-500 text-sm mt-1">Accede a los mejores juegos</p>
             </div>
             <div className="bg-white/5 rounded-2xl p-6 border border-white/10 hover:border-emerald-500/30 transition-all">
-              <span className="text-3xl">🎵</span>
+              <Music className="w-8 h-8 text-emerald-400" />
               <h3 className="text-lg font-bold mt-2">Ritmo</h3>
               <p className="text-gray-500 text-sm mt-1">Música para tu experiencia</p>
             </div>
             <div className="bg-white/5 rounded-2xl p-6 border border-white/10 hover:border-emerald-500/30 transition-all">
-              <span className="text-3xl">🏆</span>
+              <Trophy className="w-8 h-8 text-emerald-400" />
               <h3 className="text-lg font-bold mt-2">Estadísticas</h3>
               <p className="text-gray-500 text-sm mt-1">Sigue tu progreso y poder</p>
             </div>
@@ -94,7 +97,7 @@ export default function LandingPage() {
       </div>
 
       {showAuth && (
-        <AuthModal onLogin={() => window.location.reload()} />
+        <AuthModal onLogin={() => window.location.reload()} onClose={() => setShowAuth(false)} />
       )}
     </>
   );

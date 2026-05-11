@@ -1,23 +1,27 @@
 import { NextResponse } from 'next/server';
 
-export async function GET() {
-  const API_KEY = 'efdb0f78a1634e18b745d50fb3b24293'; // Tu API Key real
-  
-  try {
-    // Buscamos específicamente esos juegos en la base de datos de RAWG
-    const response = await fetch(
-      `https://api.rawg.io/api/games?key=${API_KEY}&search=fall guys,dirt 5&page_size=2`
-    );
-    
-    const data = await response.json();
+const GAME_QUERIES = ["fall guys", "dirt 5", "rocket league"];
 
-    // Mapeamos la respuesta para que el frontend la entienda
-    const games = data.results.map((game: any) => ({
+export async function GET() {
+  const API_KEY = process.env.RAWG_API_KEY;
+
+  try {
+    const results = await Promise.all(
+      GAME_QUERIES.map(async (query) => {
+        const res = await fetch(
+          `https://api.rawg.io/api/games?key=${API_KEY}&search=${encodeURIComponent(query)}&page_size=1`
+        );
+        const data = await res.json();
+        return data.results?.[0] || null;
+      })
+    );
+
+    const games = results.filter(Boolean).map((game: any) => ({
       id: game.id,
       title: game.name,
-      genre: game.genres[0]?.name.toUpperCase() || "GAME",
-      thumbnail: game.background_image, // Esta es la URL que te daba error antes
-      game_url: `https://rawg.io/games/${game.slug}`
+      genre: game.genres?.[0]?.name?.toUpperCase() || "GAME",
+      thumbnail: game.background_image,
+      game_url: `https://rawg.io/games/${game.slug}`,
     }));
 
     return NextResponse.json(games);

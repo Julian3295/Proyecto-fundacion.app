@@ -12,6 +12,9 @@ model Usuario {
   email         String   @unique
   nombre        String
   password      String
+  edad          Int?
+  telefono      String?
+  ciudad        String?
   pokemonAvatar String?
   rol           String   @default("user")
   createdAt     DateTime @default(now())

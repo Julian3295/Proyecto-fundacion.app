@@ -3,10 +3,16 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactCompiler: true,
   images: {
+    localPatterns: [
+      {
+        pathname: '/images/**',
+        search: '',
+      },
+    ],
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'media.rawg.io', // <--- ESTO ES VITAL
+        hostname: 'media.rawg.io',
       },
     ],
   },

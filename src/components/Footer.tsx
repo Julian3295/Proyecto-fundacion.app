@@ -23,7 +23,7 @@ export default function Footer() {
   }
   
   return (
-    <footer className="w-full py-8 border-t border-green-500/20 bg-black/50 backdrop-blur-md mt-20">
+    <footer className="w-full py-8 border-t border-green-500/20 bg-black/50 backdrop-blur-md">
       <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
         <div className="text-center md:text-left">
           <h3 className="text-green-400 font-bold text-lg">Fundación Habilidosos</h3>

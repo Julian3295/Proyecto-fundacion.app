@@ -2,24 +2,57 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { cerrarSesion } from '../actions';
+import { cerrarSesion, actualizarAvatar } from '../actions';
 import { useAnimeIntro } from '../hooks/useAnime';
 import Menu from '../../components/Menu';
 import Footer from '../../components/Footer';
 import SpotifySearch from '../../components/SpotifySearch';
-import { Images } from 'lucide-react';
+import PokemonSelector from '../../components/PokemonSelector';
+import { Music, X, Flame, Leaf, Droplet, Zap, RefreshCw, Weight, Ruler, Star } from 'lucide-react';
 
-const POKEMON_STATS: Record<string, any> = {
-  charmander: { tipo: "🔥 Fuego", color: "text-orange-400", poder: "85%", lvl: 99 },
-  bulbasaur: { tipo: "🌿 Planta", color: "text-green-400", poder: "75%", lvl: 82 },
-  squirtle: { tipo: "💧 Agua", color: "text-blue-400", poder: "80%", lvl: 88 },
-  pikachu: { tipo: "⚡ Eléctrico", color: "text-yellow-400", poder: "90%", lvl: 95 },
+const TYPE_COLORS: Record<string, string> = {
+  fire: "text-orange-400", grass: "text-green-400", water: "text-blue-400",
+  electric: "text-yellow-400", normal: "text-gray-300", fighting: "text-red-500",
+  flying: "text-indigo-300", poison: "text-purple-500", ground: "text-amber-600",
+  rock: "text-yellow-700", bug: "text-lime-400", ghost: "text-violet-500",
+  steel: "text-gray-400", ice: "text-cyan-300", dragon: "text-indigo-600",
+  dark: "text-neutral-600", fairy: "text-pink-300", psychic: "text-fuchsia-400",
 };
+
+const TYPE_ICONS: Record<string, any> = {
+  fire: Flame, grass: Leaf, water: Droplet, electric: Zap,
+};
+
+interface PokemonDetails {
+  stats: { name: string; value: number }[];
+  types: { name: string }[];
+  height: number;
+  weight: number;
+  abilities: string[];
+}
+
+function statLabel(name: string): string {
+  const map: Record<string, string> = {
+    hp: "HP", attack: "ATK", defense: "DEF",
+    "special-attack": "SP.ATK", "special-defense": "SP.DEF", speed: "SPD",
+  };
+  return map[name] || name.toUpperCase();
+}
+
+function statColor(value: number): string {
+  if (value >= 100) return "bg-green-500";
+  if (value >= 70) return "bg-emerald-400";
+  if (value >= 50) return "bg-yellow-400";
+  return "bg-red-400";
+}
 
 export default function AppPage() {
   const [user, setUser] = useState<any>(null);
   const [games, setGames] = useState<any[]>([]);
   const [showStats, setShowStats] = useState(false);
+  const [changingPokemon, setChangingPokemon] = useState(false);
+  const [pokemonDetails, setPokemonDetails] = useState<PokemonDetails | null>(null);
+  const [detailsLoading, setDetailsLoading] = useState(false);
   const containerRef = useAnimeIntro();
 
   const handleLogout = async () => {
@@ -28,12 +61,42 @@ export default function AppPage() {
   };
 
   useEffect(() => {
-    fetch('/api/user').then(res => res.json()).then(data => setUser(data));
+    fetch('/api/user').then(res => res.json()).then(data => {
+      if (data?.id) setUser(data);
+    }).catch(err => console.error("Error fetching user:", err));
     fetch('/api/games')
       .then(res => res.json())
       .then(data => setGames(data))
       .catch(err => console.error("Error cargando juegos:", err));
   }, []);
+
+  useEffect(() => {
+    if (!showStats || changingPokemon) return;
+    const pokemon = (user?.pokemonAvatar || 'charmander').toLowerCase();
+    fetchDetails(pokemon);
+  }, [showStats, changingPokemon, user?.pokemonAvatar]);
+
+  const fetchDetails = async (pokemon: string) => {
+    setDetailsLoading(true);
+    try {
+      const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`);
+      const data = await res.json();
+      setPokemonDetails({
+        stats: data.stats.map((s: any) => ({
+          name: s.stat.name,
+          value: s.base_stat,
+        })),
+        types: data.types.map((t: any) => ({ name: t.type.name })),
+        height: data.height,
+        weight: data.weight,
+        abilities: data.abilities.map((a: any) => a.ability.name),
+      });
+    } catch {
+      setPokemonDetails(null);
+    } finally {
+      setDetailsLoading(false);
+    }
+  };
 
   if (!user) {
     return (
@@ -44,42 +107,17 @@ export default function AppPage() {
   }
 
   const currentPokemon = (user?.pokemonAvatar || 'charmander').toLowerCase();
-  const stats = POKEMON_STATS[currentPokemon] || { tipo: "Normal", color: "text-white", poder: "50%", lvl: 10 };
 
   return (
-    <main ref={containerRef} className="min-h-screen bg-[#030712] text-white relative">
-      <nav className="fixed top-0 left-0 right-0 z-60 bg-[#030712]/60 backdrop-blur-xl border-b border-white/5 px-4 md:px-10 h-20 flex items-center justify-between">
-        <div className="flex items-center">
-          <div className="hidden md:block">
-            <Menu user={user} onLogout={handleLogout} />
-          </div>
-        </div>
+    <main ref={containerRef} className="min-h-screen bg-[#030712] text-white relative flex flex-col">
+      <Menu
+        user={user}
+        onLogout={handleLogout}
+        pokemonName={currentPokemon}
+        onShowStats={() => setShowStats(true)}
+      />
 
-        <div className="flex items-center">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowStats(true);
-            }}
-            className="group flex items-center gap-3 bg-white/5 hover:bg-white/10 p-1 pr-4 rounded-full border border-emerald-500/30 transition-all cursor-pointer relative z-70"
-          >
-            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-emerald-500 overflow-hidden bg-black">
-              <img
-                src={`https://img.pokemondb.net/sprites/black-white/anim/normal/${currentPokemon}.gif`}
-                alt="Pokemon Avatar"
-                className="w-full h-full object-contain p-1"
-              />
-            </div>
-            <div className="text-left leading-tight hidden sm:block">
-              <p className="text-[10px] font-black uppercase tracking-tighter">{user?.nombre?.split(' ')[0] || 'USUARIO'}</p>
-              <p className="text-[8px] text-emerald-400 font-bold">● ONLINE</p>
-            </div>
-          </button>
-        </div>
-      </nav>
-
-      <div className="max-w-7xl mx-auto px-4 pt-32 pb-20 space-y-20">
+      <div className="flex-1 max-w-7xl w-full mx-auto px-4 pt-32 pb-12 space-y-20">
         <header className="text-center mb-10">
           <Image
             src="/images/logo-habilidosos.png"
@@ -144,49 +182,139 @@ export default function AppPage() {
 
         <section id="ritmo" className="bg-gray-900/30 backdrop-blur-sm p-6 md:p-10 rounded-[2.5rem] border border-white/5 shadow-2xl">
           <div className="flex items-center gap-4 mb-8">
-            <span className="text-2xl">🎵</span>
+            <Music className="w-6 h-6 text-blue-400" />
             <h2 className="text-2xl font-black italic uppercase text-blue-400">Ritmo Habilidosos</h2>
           </div>
           <SpotifySearch />
         </section>
-
-        <Footer />
       </div>
+
+      <Footer />
 
       {showStats && (
         <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/95 backdrop-blur-md" onClick={() => setShowStats(false)} />
-          <div className="relative bg-[#0a0f1a] border border-emerald-500/50 rounded-[2.5rem] p-10 max-w-85 w-full shadow-2xl animate-in zoom-in duration-300">
-            <button onClick={() => setShowStats(false)} className="absolute top-6 right-6 text-white/20 hover:text-white">✕</button>
-            <div className="flex flex-col items-center text-center">
-              <div className="w-24 h-24 mb-6 bg-emerald-500/5 rounded-full flex items-center justify-center border border-emerald-500/20">
-                <img src={`https://img.pokemondb.net/sprites/black-white/anim/normal/${currentPokemon}.gif`} className="w-16 h-16 object-contain" />
+          <div className="absolute inset-0 bg-black/95 backdrop-blur-md" onClick={() => { setShowStats(false); setChangingPokemon(false); }} />
+          <div className="relative bg-[#0a0f1a] border border-emerald-500/50 rounded-[2.5rem] p-6 sm:p-8 max-w-lg w-full shadow-2xl animate-in zoom-in duration-300 max-h-[90vh] overflow-y-auto">
+            <button onClick={() => { setShowStats(false); setChangingPokemon(false); }} className="absolute top-4 right-4 text-white/20 hover:text-white z-10"><X className="w-5 h-5" /></button>
+
+            {changingPokemon ? (
+              <div className="flex flex-col items-center pt-4">
+                <h2 className="text-2xl font-black italic uppercase mb-2 text-emerald-400">Cambiar Pokémon</h2>
+                <p className="text-gray-400 text-sm mb-6">Selecciona tu nuevo compañero</p>
+                <PokemonSelector
+                  onSelect={async (pokemonNombre) => {
+                    const result = await actualizarAvatar(pokemonNombre);
+                    if (result.success) {
+                      setUser((prev: any) => ({ ...prev, pokemonAvatar: pokemonNombre }));
+                      setPokemonDetails(null);
+                      setChangingPokemon(false);
+                    }
+                  }}
+                  selectedPokemon={currentPokemon}
+                />
+                <button
+                  onClick={() => setChangingPokemon(false)}
+                  className="mt-6 text-gray-400 hover:text-white text-sm font-medium transition-colors"
+                >
+                  Cancelar
+                </button>
               </div>
-              <h2 className="text-3xl font-black italic uppercase mb-1">{currentPokemon}</h2>
-              <p className="text-emerald-400 font-bold text-[10px] tracking-widest uppercase mb-8">Estatus Habilidoso</p>
-              <div className="grid grid-cols-2 gap-4 w-full mb-8">
-                <div className="bg-white/5 p-4 rounded-2xl">
-                  <p className="text-[8px] text-gray-500 font-black uppercase mb-1">Tipo</p>
-                  <p className={`font-bold text-sm ${stats.color}`}>{stats.tipo}</p>
+            ) : (
+              <div className="flex flex-col items-center text-center pt-2">
+                <div className="w-24 h-24 mb-4 bg-emerald-500/5 rounded-full flex items-center justify-center border border-emerald-500/20">
+                  <img src={`https://img.pokemondb.net/sprites/black-white/anim/normal/${currentPokemon}.gif`} alt={currentPokemon} className="w-16 h-16 object-contain" />
                 </div>
-                <div className="bg-white/5 p-4 rounded-2xl">
-                  <p className="text-[8px] text-gray-500 font-black uppercase mb-1">Nivel</p>
-                  <p className="font-bold text-sm text-emerald-400">LVL {stats.lvl}</p>
-                </div>
+                <h2 className="text-3xl font-black italic uppercase mb-1">{currentPokemon}</h2>
+                <p className="text-emerald-400 font-bold text-[10px] tracking-widest uppercase mb-6">Estatus Habilidoso</p>
+
+                {detailsLoading ? (
+                  <div className="py-8">
+                    <div className="animate-spin w-6 h-6 border-4 border-emerald-500 border-t-transparent rounded-full mx-auto" />
+                  </div>
+                ) : pokemonDetails ? (
+                  <>
+                    {/* Type badges */}
+                    <div className="flex gap-2 mb-6">
+                      {pokemonDetails.types.map((t) => {
+                        const Icon = TYPE_ICONS[t.name];
+                        return (
+                          <span key={t.name} className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold uppercase bg-white/5 ${TYPE_COLORS[t.name] || "text-gray-300"}`}>
+                            {Icon && <Icon className="w-3 h-3" />}
+                            {t.name}
+                          </span>
+                        );
+                      })}
+                    </div>
+
+                    {/* Base Stats */}
+                    <div className="w-full space-y-3 mb-6">
+                      <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest text-left">Stats Base</p>
+                      {pokemonDetails.stats.map((s) => (
+                        <div key={s.name} className="flex items-center gap-3">
+                          <span className="text-[10px] font-bold text-gray-400 w-14 text-right">{statLabel(s.name)}</span>
+                          <span className="text-xs font-black w-7 text-right text-white">{s.value}</span>
+                          <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all duration-700 ${statColor(s.value)}`}
+                              style={{ width: `${Math.min((s.value / 255) * 100, 100)}%` }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Overall power */}
+                    <div className="w-full mb-6">
+                      {(() => {
+                        const avg = Math.round(pokemonDetails.stats.reduce((a, s) => a + s.value, 0) / pokemonDetails.stats.length);
+                        return (
+                          <div className="w-full text-left space-y-2">
+                            <div className="flex justify-between text-[10px] font-black">
+                              <span>PODER TOTAL</span>
+                              <span className="text-emerald-400">{avg}%</span>
+                            </div>
+                            <div className="h-2 w-full bg-white/5 rounded-full p-0.5">
+                              <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${avg}%` }} />
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+
+                    {/* Height, Weight, Abilities */}
+                    <div className="grid grid-cols-3 gap-3 w-full mb-6">
+                      <div className="bg-white/5 p-3 rounded-2xl">
+                        <Ruler className="w-4 h-4 mx-auto mb-1 text-gray-400" />
+                        <p className="text-[8px] text-gray-500 font-black uppercase mb-0.5">Altura</p>
+                        <p className="font-bold text-sm">{(pokemonDetails.height / 10).toFixed(1)} m</p>
+                      </div>
+                      <div className="bg-white/5 p-3 rounded-2xl">
+                        <Weight className="w-4 h-4 mx-auto mb-1 text-gray-400" />
+                        <p className="text-[8px] text-gray-500 font-black uppercase mb-0.5">Peso</p>
+                        <p className="font-bold text-sm">{(pokemonDetails.weight / 10).toFixed(1)} kg</p>
+                      </div>
+                      <div className="bg-white/5 p-3 rounded-2xl">
+                        <Star className="w-4 h-4 mx-auto mb-1 text-gray-400" />
+                        <p className="text-[8px] text-gray-500 font-black uppercase mb-0.5">Habilidades</p>
+                        <p className="font-bold text-xs leading-tight capitalize">{pokemonDetails.abilities.slice(0, 2).join(", ")}</p>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <p className="text-gray-500 text-sm mb-6">No se pudieron cargar los datos</p>
+                )}
+
+                <button
+                  onClick={() => setChangingPokemon(true)}
+                  className="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-sm font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2"
+                >
+                  <RefreshCw className="w-4 h-4" /> Cambiar Pokémon
+                </button>
+                <button onClick={() => setShowStats(false)} className="mt-3 w-full py-4 bg-emerald-500 text-black font-black rounded-2xl text-xs uppercase hover:bg-emerald-400 transition-all">
+                  Cerrar Reporte
+                </button>
               </div>
-              <div className="w-full text-left space-y-2">
-                <div className="flex justify-between text-[10px] font-black">
-                  <span>PODER</span>
-                  <span className="text-emerald-400">{stats.poder}</span>
-                </div>
-                <div className="h-2 w-full bg-white/5 rounded-full p-0.5">
-                  <div className="h-full bg-emerald-500 rounded-full" style={{ width: stats.poder }} />
-                </div>
-              </div>
-              <button onClick={() => setShowStats(false)} className="mt-10 w-full py-4 bg-emerald-500 text-black font-black rounded-2xl text-xs uppercase hover:bg-emerald-400 transition-all">
-                Cerrar Reporte
-              </button>
-            </div>
+            )}
           </div>
         </div>
       )}

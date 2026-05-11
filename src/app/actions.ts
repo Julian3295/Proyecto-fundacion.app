@@ -29,6 +29,9 @@ export async function registrarUsuario(formData: FormData) {
   const email = formData.get('email') as string;
   const nombre = formData.get('nombre') as string;
   const password = formData.get('password') as string;
+  const edad = formData.get('edad') ? parseInt(formData.get('edad') as string) : null;
+  const telefono = formData.get('telefono') as string;
+  const ciudad = formData.get('ciudad') as string;
 
   try {
     const nuevoUsuario = await prisma.usuario.create({
@@ -36,6 +39,9 @@ export async function registrarUsuario(formData: FormData) {
         email, 
         nombre, 
         password,
+        edad,
+        telefono,
+        ciudad,
         pokemonAvatar: "pendiente",
         rol: "user"
       }
@@ -75,6 +81,7 @@ export async function iniciarSesion(formData: FormData) {
 
     return { success: true };
   } catch (error) {
+    console.error("Error en iniciarSesion:", error);
     return { success: false, error: "Error al iniciar sesión" };
   }
 }
