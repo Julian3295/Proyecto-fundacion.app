@@ -8,7 +8,8 @@ import Menu from '../../components/Menu';
 import Footer from '../../components/Footer';
 import SpotifySearch from '../../components/SpotifySearch';
 import PokemonSelector from '../../components/PokemonSelector';
-import { Music, X, Flame, Leaf, Droplet, Zap, RefreshCw, Weight, Ruler, Star } from 'lucide-react';
+import { FaMusic } from 'react-icons/fa';
+import { X, Flame, Leaf, Droplet, Zap, RefreshCw, Weight, Ruler, Star } from 'lucide-react';
 
 const TYPE_COLORS: Record<string, string> = {
   fire: "text-orange-400", grass: "text-green-400", water: "text-blue-400",
@@ -134,7 +135,7 @@ export default function AppPage() {
           </div>
         </header>
 
-        <section id="juegos" className="anime-scroll space-y-8">
+        <section id="juegos" className="space-y-8">
           <div className="flex items-center gap-3 border-l-4 border-emerald-500 pl-4">
             <h2 className="text-2xl font-black uppercase tracking-tighter italic">Zona de Juegos</h2>
           </div>
@@ -181,9 +182,9 @@ export default function AppPage() {
           </div>
         </section>
 
-        <section id="ritmo" className="anime-scroll bg-gray-900/30 backdrop-blur-sm p-6 md:p-10 rounded-[2.5rem] border border-white/5 shadow-2xl">
+        <section id="ritmo" className="bg-gray-900/30 backdrop-blur-sm p-6 md:p-10 rounded-[2.5rem] border border-white/5 shadow-2xl">
           <div className="flex items-center gap-4 mb-8">
-            <Music className="w-6 h-6 text-blue-400" />
+            <FaMusic className="w-6 h-6 text-blue-400" />
             <h2 className="text-2xl font-black italic uppercase text-blue-400">Ritmo Habilidosos</h2>
           </div>
           <SpotifySearch />
