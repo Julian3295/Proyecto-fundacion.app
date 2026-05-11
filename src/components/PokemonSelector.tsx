@@ -57,7 +57,7 @@ export default function PokemonSelector({ onSelect, selectedPokemon }: {
     const fetchPokemon = async () => {
       setLoading(true);
       try {
-        const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=151');
+        const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=649');
         const data = await response.json();
         const detailed = await Promise.all(
           data.results.map(async (p: any) => {

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { cerrarSesion, actualizarAvatar } from '../actions';
-import { useAnimeIntro } from '../hooks/useAnime';
+import { useAnimeIntro, useAnimeScroll } from '../hooks/useAnime';
 import Menu from '../../components/Menu';
 import Footer from '../../components/Footer';
 import SpotifySearch from '../../components/SpotifySearch';
@@ -54,6 +54,7 @@ export default function AppPage() {
   const [pokemonDetails, setPokemonDetails] = useState<PokemonDetails | null>(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
   const containerRef = useAnimeIntro();
+  useAnimeScroll();
 
   const handleLogout = async () => {
     await cerrarSesion();
@@ -118,7 +119,7 @@ export default function AppPage() {
       />
 
       <div className="flex-1 max-w-7xl w-full mx-auto px-4 pt-32 pb-12 space-y-20">
-        <header className="text-center mb-10">
+        <header id="inicio" className="text-center mb-10">
           <Image
             src="/images/logo-habilidosos.png"
             alt="Logo Hero"
@@ -133,7 +134,7 @@ export default function AppPage() {
           </div>
         </header>
 
-        <section id="juegos" className="space-y-8">
+        <section id="juegos" className="anime-scroll space-y-8">
           <div className="flex items-center gap-3 border-l-4 border-emerald-500 pl-4">
             <h2 className="text-2xl font-black uppercase tracking-tighter italic">Zona de Juegos</h2>
           </div>
@@ -180,7 +181,7 @@ export default function AppPage() {
           </div>
         </section>
 
-        <section id="ritmo" className="bg-gray-900/30 backdrop-blur-sm p-6 md:p-10 rounded-[2.5rem] border border-white/5 shadow-2xl">
+        <section id="ritmo" className="anime-scroll bg-gray-900/30 backdrop-blur-sm p-6 md:p-10 rounded-[2.5rem] border border-white/5 shadow-2xl">
           <div className="flex items-center gap-4 mb-8">
             <Music className="w-6 h-6 text-blue-400" />
             <h2 className="text-2xl font-black italic uppercase text-blue-400">Ritmo Habilidosos</h2>

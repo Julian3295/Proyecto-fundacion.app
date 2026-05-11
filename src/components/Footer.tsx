@@ -1,13 +1,28 @@
 'use client'
+import { useEffect } from 'react';
+import gsap from 'gsap';
 import anime from 'animejs'
 import { FaFacebook, FaInstagram, FaTiktok, FaYoutube } from 'react-icons/fa';
 
 export default function Footer() {
 
+  const creditText = "© 2026 Desarrollado por Julian Rivera Valencia - Medellín, Colombia";
+
+  useEffect(() => {
+    gsap.from(".letra", {
+      duration: 1,
+      rotateX: -90,
+      opacity: 0,
+      stagger: 0.05,
+      ease: "back.out(1.7)",
+      y: 20,
+    });
+  }, []);
+
   const logoPop = (el: any) => {
     anime({
       targets: el,
-      scale: 1.3, // Un poco más grande para que se note el efecto
+      scale: 1.3,
       duration: 300,
       easing: 'easeOutBack'
     })
@@ -71,7 +86,11 @@ export default function Footer() {
         </div>
       </div>
       <div className="text-center mt-6 text-gray-600 text-xs">
-        © 2026 Desarrollado por Julian Rivera Valencia - Medellín, Colombia
+        {creditText.split('').map((char, i) => (
+          <span key={i} className="letra" style={{ display: 'inline-block' }}>
+            {char === ' ' ? '\u00A0' : char}
+          </span>
+        ))}
       </div>
     </footer>
   );

@@ -31,6 +31,12 @@
     border-radius: 4px;
   }
   
+  /* Elementos animados al hacer scroll */
+  .anime-scroll {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
   /* Efecto glass personalizado */
   .glass-effect {
     background: rgba(17, 25, 40, 0.75);

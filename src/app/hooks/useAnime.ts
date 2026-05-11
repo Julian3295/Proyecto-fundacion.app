@@ -42,3 +42,33 @@ export function useAnimeIntro() {
 
   return containerRef;
 }
+
+export function useAnimeScroll() {
+  useEffect(() => {
+    const elements = document.querySelectorAll('.anime-scroll');
+    if (elements.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const el = entry.target;
+            (anime as any)({
+              targets: el,
+              translateY: [30, 0],
+              opacity: [0, 1],
+              duration: 700,
+              easing: 'easeOutQuad',
+              delay: 100,
+            });
+            observer.unobserve(el);
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+
+    elements.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+}

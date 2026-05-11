@@ -2,7 +2,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Menu as MenuIcon, X, Gamepad2, Music, LogOut } from 'lucide-react';
+import { Menu as MenuIcon, X, Gamepad2, Music, LogOut, Home } from 'lucide-react';
+import gsap from 'gsap';
 
 interface MenuProps {
   user?: any;
@@ -47,8 +48,16 @@ export default function Menu({ user, onLogout, pokemonName, onShowStats }: MenuP
     }
   };
 
+  const handleNavClick = (e: React.MouseEvent<HTMLButtonElement>, sectionId: string) => {
+    const btn = e.currentTarget;
+    gsap.timeline()
+      .to(btn, { scale: 0.88, duration: 0.08, ease: 'power2.in' })
+      .to(btn, { scale: 1, duration: 0.4, ease: 'elastic.out(1, 0.3)' });
+    scrollToSection(sectionId);
+  };
+
   const menuItems = [
-    { id: 'inicio', name: 'Inicio', icon: null },
+    { id: 'inicio', name: 'Inicio', icon: Home },
     { id: 'juegos', name: 'Juegos', icon: Gamepad2 },
     { id: 'ritmo', name: 'Ritmo', icon: Music },
   ];
@@ -85,7 +94,7 @@ export default function Menu({ user, onLogout, pokemonName, onShowStats }: MenuP
               {menuItems.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => scrollToSection(item.id)}
+                  onClick={(e) => handleNavClick(e, item.id)}
                   className={`px-4 lg:px-5 py-2 rounded-xl text-sm lg:text-base font-medium transition-all duration-300 relative group ${
                     activeSection === item.id
                       ? 'text-green-400'
@@ -157,9 +166,9 @@ export default function Menu({ user, onLogout, pokemonName, onShowStats }: MenuP
           <div className="bg-black/95 backdrop-blur-xl border-t border-green-500/20 py-4">
             {menuItems.map((item) => (
               <button
-                key={item.id}
-                onClick={() => scrollToSection(item.id)}
-                className={`w-full text-left px-6 py-3 transition-all duration-200 flex items-center gap-3 ${
+                  key={item.id}
+                  onClick={(e) => handleNavClick(e, item.id)}
+                  className={`w-full text-left px-6 py-3 transition-all duration-200 flex items-center gap-3 ${
                   activeSection === item.id
                     ? 'bg-green-500/10 text-green-400 border-l-4 border-green-400'
                     : 'text-gray-400 hover:bg-white/5'
